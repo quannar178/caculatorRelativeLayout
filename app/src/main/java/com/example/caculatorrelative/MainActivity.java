@@ -21,14 +21,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView tvResult, tvShow;
 
-    StringBuilder tmp1;
-    int count = 0;
-    int tmpCal;
-    int tmpCalCount = 0;
-    StringBuilder tmpOut;
-    float a = 0;
-    float b = 0;
-    float preResult;
+    int type = 0; // = 1: number ; = 2: +, -, *, /; = 3: C.
+    StringBuilder tmpA;
+    StringBuilder tmpShow;
+    int a = 0, b = 0, result = 0;
+    int codeCal = 0;
+    int preCodeCal = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,22 +36,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Mapping();
 
-        tmp1 = new StringBuilder();
-        tmp1.append('0');
-        tmpOut = new StringBuilder();
+        MappingClick();
 
-        btnPlusMinus.setOnClickListener(this);
-        btnNum0.setOnClickListener(this);
-        btnDot.setOnClickListener(this);
-        btnEqual.setOnClickListener(this);
-        btnNum1.setOnClickListener(this);
-        btnNum2.setOnClickListener(this);
-        btnNum3.setOnClickListener(this);
+        tmpA = new StringBuilder();
+        tmpShow = new StringBuilder();
 
-        btnMinus.setOnClickListener(this);
-        btnDevide.setOnClickListener(this);
-        btnPlus.setOnClickListener(this);
-        btnMulti.setOnClickListener(this);
+        tmpA.append('0');
+    }
+
+    private void MappingClick() {
     }
 
     private void Mapping() {
@@ -78,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPercent = findViewById(R.id.btnPercent);
         btnCE = findViewById(R.id.btnCE);
         btnC = findViewById(R.id.btnC);
-        btnDel = findViewById(R.id.btnDel);
+        //btnDel = findViewById(R.id.btnDel);
         btnMC = findViewById(R.id.btnMC);
         btnMR = findViewById(R.id.btnMR);
         btnMPlus = findViewById(R.id.btnMPlus);
@@ -90,94 +83,126 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvShow = findViewById(R.id.tvShow);
     }
 
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
+
         switch (id){
-            case R.id.btnNum0: {tmp1.append("0"); showNum(); break;}
-            case R.id.btnNum1: {tmp1.append("1"); showNum(); break;}
-            case R.id.btnPlus: {tmpCal = 1; ; showCal() ; tmpCalCount = 1; break; }
-            case R.id.btnMinus: {tmpCal = 2; showCal() ; tmpCalCount = 1; break; }
-            case R.id.btnMultiple: {tmpCal = 3; showCal() ; tmpCalCount = 1; break; }
-            case R.id.btnDevide: {tmpCal = 4; showCal() ; tmpCalCount = 1; break; }
-            case R.id.btnEqual: showEqual(); break;
+            case R.id.btnNum0:
+                tmpA.append('0');
+                proccessNum();
+                break;
+            case R.id.btnNum1:
+                tmpA.append('1');
+                proccessNum();
+                break;
+            case R.id.btnNum2:
+                tmpA.append('2');
+                proccessNum();
+                break;
+            case R.id.btnNum3:
+                tmpA.append('3');
+                proccessNum();
+                break;
+            case R.id.btnPlus:
+                codeCal = 1;
+                proccessCal();
+                break;
+            case R.id.btnMinus:
+                codeCal = 2;
+                proccessCal();
+                break;
+            case R.id.btnDel:
+                if(tmpA.length() == 0){
+                    tmpA.append("0");
+                }else{
+                    tmpA.deleteCharAt(tmpA.length() - 1);
+                }
+
+                tvShow.setText(tmpA.toString());
+                break;
+            case R.id.btnC:
+                a = b = result = 0;
+                tmpA = new StringBuilder();
+                tmpA.append("0");
+                tmpShow = new StringBuilder();
+                type = 0;
+                codeCal = 0;
+                break;
+            case R.id.btnCE:
+                tmpA = new StringBuilder();
+                tmpA.append("0");
+                break;
+            case R.id.btnEqual:
+                proccessEqual();
+                break;
             default:
                 break;
         }
     }
 
-    private void showCal() {
-        if(tmpOut.length() == 0 && tmp1.equals('0') ){
-            tmpOut.append(a);
+    private void proccessEqual() {
+        if(preCodeCal == 1){
+            result = a + b;
+        }else if(preCodeCal == 2){
+            result = a - b;
+        }else if(preCodeCal == 3){
+            result = b / a;
+        }else if(preCodeCal == 4){
+            result = a * b;
         }
-        if (tmpCalCount == 0){
-            tmpOut.append(a);
-            if(tmpCal == 1){
-                tmpOut.append('+');
-            }
-            if(tmpCal == 2){
-                tmpOut.append('-');
-            }
-            if (tmpCal == 3){
-                tmpOut.append('*');
-            }
-            if(tmpCal == 4){
-                tmpOut.append('/');
-            }
-            b = a;
-        }
-        else {
-            if (tmpCal == 1){
-                tmpOut.setCharAt(tmpOut.length() - 1, '+');
-            }
-            if(tmpCal == 2){
-                tmpOut.setCharAt(tmpOut.length() - 1, '-');
-            }
-            if(tmpCal == 3){
-                tmpOut.setCharAt(tmpOut.length() - 1, '*');
-            }
-            if(tmpCal == 4){
-                tmpOut.setCharAt(tmpOut.length() - 1, '/');
-            }
-        }
-        tmp1 = new StringBuilder();
-        tvResult.setText("" + tmpOut.toString());
+        tmpShow.append(tmpA.toString() + "=");
+        tvResult.setText(tmpShow.toString());
+        tvShow.setText("" + result);
     }
 
-    private void showEqual() {
-
-        tmpCalCount = 0;
-        if(count != 0) b = preResult;
-        if (tmpCal == 1){
-            preResult = a + b;
-            tvShow.setText("" + preResult);
-            tvResult.setText(tmpOut.toString() + '=');
+    private void proccessCal() {
+        if(tmpShow.equals("")){
+            tmpShow.append("0");
         }
-        if(tmpCal == 2){
-            preResult = b - a;
-            tvShow.setText("" + preResult);
-            tvResult.setText(tmpOut.toString() + '=');
+        if(type == 2){
+            if(codeCal == 1){
+                tmpShow.setCharAt(tmpShow.length() - 1,'+');
+            }
+            if(codeCal == 2){
+                tmpShow.setCharAt(tmpShow.length() - 1,'-');
+            }
         }
-        if(tmpCal == 3){
-            preResult = a * b;
-            tvShow.setText("" + preResult);
-            tvResult.setText(tmpOut.toString() + '=');
+        else{
+            a = Integer.parseInt(tmpA.toString());
+            tmpA = new StringBuilder();
+            tmpShow.append("" + a);
+            if(codeCal == 1){
+                tmpShow.append("+");
+            }
+            if(codeCal == 2){
+                tmpShow.append("-");
+            }
         }
-        if(tmpCal == 4){
-            preResult = b / a;
-            tvShow.setText(String.format("%s", preResult));
-            tvResult.setText(tmpOut.toString() + '=');
+        if(preCodeCal == 1){
+            result = a + b;
+        }else if(preCodeCal == 2){
+            result = a - b;
+        }else if(preCodeCal == 3){
+            result = b / a;
+        }else if(preCodeCal == 4){
+            result = a * b;
         }
-        count++;
-
-        
+        b = a;
+        preCodeCal = codeCal;
+        tvResult.setText(tmpShow + " result" + result);
+        type = 2;
     }
 
-    @SuppressLint("DefaultLocale")
-    private void showNum(){
-        tmpCalCount = 0;
-        a = Integer.parseInt(tmp1.toString());
-        Log.i("TMP1", "" + a);
-        tvShow.setText(String.format("%.0f", a));
+    private void proccessNum() {
+        if(type != 1){
+            int tmp = Integer.parseInt(tmpA.toString());
+            tmpA = new StringBuilder();
+            tmpA.append(tmp);
+        }
+        int tm = Integer.parseInt(tmpA.toString());
+        tvShow.setText("" + tm);
+        type = 1;
     }
 }
