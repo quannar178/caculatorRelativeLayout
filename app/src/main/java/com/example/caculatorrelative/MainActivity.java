@@ -9,22 +9,24 @@ import java.lang.StringBuilder;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button btnNum0, btnNum1, btnNum2, btnNum3, btnNum4, btnNum5, btnNum6, btnNum7,
-            btnNum8, btnNum9, btnEqual, btnPlus, btnMinus, btnMulti, btnDevide, btnDel,
+            btnNum8, btnNum9, btnEqual, btnPlus, btnMinus, btnMulti, btnDevide,
             btnDot, btnPlusMinus, btnC, btnCE, btnOnePerX, btnSquare, btnSqrt,
             btnPercent, btnMC, btnMR, btnMPlus, btnMMinus, btnMS, btnM;
 
+    ImageButton btnDel;
     TextView tvResult, tvShow;
 
     int type = 0; // = 1: number ; = 2: +, -, *, /; = 3: C.
     StringBuilder tmpA;
     StringBuilder tmpShow;
-    int a = 0, b = 0, result = 0;
+    float a = 0, b = 0, result = 0;
     int codeCal = 0;
     int preCodeCal = 0;
 
@@ -45,6 +47,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void MappingClick() {
+        btnPlusMinus.setOnClickListener(this);
+        btnNum0.setOnClickListener(this);
+        btnDot.setOnClickListener(this);
+        btnEqual.setOnClickListener(this);
+        btnNum1.setOnClickListener(this);
+        btnNum2.setOnClickListener(this);
+        btnNum3.setOnClickListener(this);
+        btnPlus.setOnClickListener(this);
+        btnNum4.setOnClickListener(this);
+        btnNum5.setOnClickListener(this);
+        btnNum6.setOnClickListener(this);
+        btnMinus.setOnClickListener(this);
+        btnNum7.setOnClickListener(this);
+        btnNum8.setOnClickListener(this);
+        btnNum9.setOnClickListener(this);
+        btnMulti.setOnClickListener(this);
+        btnOnePerX.setOnClickListener(this);
+        btnSquare.setOnClickListener(this);
+        btnSqrt.setOnClickListener(this);
+        btnDevide.setOnClickListener(this);
+        btnPercent.setOnClickListener(this);
+        btnCE.setOnClickListener(this);
+        btnC.setOnClickListener(this);
+        btnDel.setOnClickListener(this);
+        btnMC.setOnClickListener(this);
+        btnMR.setOnClickListener(this);
+        btnMPlus.setOnClickListener(this);
+        btnMMinus.setOnClickListener(this);
+        btnMS.setOnClickListener(this);
+        btnM.setOnClickListener(this);
+
+        tvResult.setOnClickListener(this);
+        tvShow.setOnClickListener(this);
     }
 
     private void Mapping() {
@@ -71,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPercent = findViewById(R.id.btnPercent);
         btnCE = findViewById(R.id.btnCE);
         btnC = findViewById(R.id.btnC);
-        //btnDel = findViewById(R.id.btnDel);
+        btnDel = findViewById(R.id.btnDel);
         btnMC = findViewById(R.id.btnMC);
         btnMR = findViewById(R.id.btnMR);
         btnMPlus = findViewById(R.id.btnMPlus);
@@ -105,12 +140,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tmpA.append('3');
                 proccessNum();
                 break;
+            case R.id.btnNum4:
+                tmpA.append('4');
+                proccessNum();
+                break;
+            case R.id.btnNum5:
+                tmpA.append('5');
+                proccessNum();
+                break;
+            case R.id.btnNum6:
+                tmpA.append('6');
+                proccessNum();
+                break;
+            case R.id.btnNum7:
+                tmpA.append('7');
+                proccessNum();
+                break;
+            case R.id.btnNum8:
+                tmpA.append('8');
+                proccessNum();
+                break;
+            case R.id.btnNum9:
+                tmpA.append('9');
+                proccessNum();
+                break;
             case R.id.btnPlus:
                 codeCal = 1;
                 proccessCal();
                 break;
             case R.id.btnMinus:
                 codeCal = 2;
+                proccessCal();
+                break;
+            case R.id.btnMultiple:
+                codeCal = 3;
+                proccessCal();
+                break;
+            case R.id.btnDevide:
+                codeCal = 4;
                 proccessCal();
                 break;
             case R.id.btnDel:
@@ -129,10 +196,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 tmpShow = new StringBuilder();
                 type = 0;
                 codeCal = 0;
+                tvShow.setText(tmpA.toString());
+                tvResult.setText("");
                 break;
             case R.id.btnCE:
                 tmpA = new StringBuilder();
                 tmpA.append("0");
+                tvShow.setText(tmpA.toString());
                 break;
             case R.id.btnEqual:
                 proccessEqual();
@@ -143,14 +213,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void proccessEqual() {
+        a = Integer.parseInt(tmpA.toString());
+        tmpA = new StringBuilder();
+        tmpShow.append("" + a);
         if(preCodeCal == 1){
             result = a + b;
         }else if(preCodeCal == 2){
-            result = a - b;
+            result = b - a;
         }else if(preCodeCal == 3){
-            result = b / a;
+            result = b * a;
         }else if(preCodeCal == 4){
-            result = a * b;
+            result = b / a;
         }
         tmpShow.append(tmpA.toString() + "=");
         tvResult.setText(tmpShow.toString());
@@ -168,6 +241,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(codeCal == 2){
                 tmpShow.setCharAt(tmpShow.length() - 1,'-');
             }
+            if(codeCal == 3){
+                tmpShow.setCharAt(tmpShow.length() - 1,'*');
+            }
+            if(codeCal == 4){
+                tmpShow.setCharAt(tmpShow.length() - 1,'/');
+            }
         }
         else{
             a = Integer.parseInt(tmpA.toString());
@@ -179,19 +258,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(codeCal == 2){
                 tmpShow.append("-");
             }
+            if(codeCal == 3){
+                tmpShow.append("*");
+            }
+            if(codeCal == 4){
+                tmpShow.append("/");
+            }
         }
         if(preCodeCal == 1){
             result = a + b;
         }else if(preCodeCal == 2){
             result = a - b;
         }else if(preCodeCal == 3){
-            result = b / a;
+            result = b * a;
         }else if(preCodeCal == 4){
-            result = a * b;
+            result = b / a;
         }
         b = a;
         preCodeCal = codeCal;
-        tvResult.setText(tmpShow + " result" + result);
+        tvResult.setText(tmpShow);
         type = 2;
     }
 
